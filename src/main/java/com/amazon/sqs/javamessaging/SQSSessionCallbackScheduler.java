@@ -92,7 +92,7 @@ public class SQSSessionCallbackScheduler implements Runnable {
         try {            
             while (true) {
                 try {
-                    if (closed) {
+                    if (closed || !session.isRunning()) {
                         break;
                     }
                     synchronized (callbackQueue) {
