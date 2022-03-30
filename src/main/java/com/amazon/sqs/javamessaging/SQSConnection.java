@@ -197,6 +197,10 @@ public class SQSConnection implements Connection, QueueConnection {
         }
         synchronized (stateLock) {
             if (closing) {
+                /**
+                 * SQSSession's constructor has already started a SQSSessionCallbackScheduler which should be closed
+                 * before leaving sqsSession object.
+                 */
                 sqsSession.close();
                 throw new IllegalStateException("Connection is closed or closing");
             }
