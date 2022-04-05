@@ -195,8 +195,15 @@ public class SQSConnection implements Connection, QueueConnection {
             LOG.error("Unrecognized acknowledgeMode. Cannot create Session.");
             throw new JMSException("Unrecognized acknowledgeMode. Cannot create Session.");
         }
-        synchronized (stateLock) { 
-            checkClosing();
+        synchronized (stateLock) {
+            if (closing) {
+                /**
+                 * SQSSession's constructor has already started a SQSSessionCallbackScheduler which should be closed
+                 * before leaving sqsSession object.
+                 */
+                sqsSession.close();
+                throw new IllegalStateException("Connection is closed or closing");
+            }
             sessions.add(sqsSession);
 
             /**
